@@ -2,16 +2,14 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser'); 
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var app = express();
 var sequelize = require('./models/index'); 
 var authRouter = require('./routes/auth');
-var usersRouter = require('./routes/users');
-var customerRouter = require('./routes/customer');
-
-
-// view engine setup
+var productionRouter = require('./routes/production');
+var reportRouter = require('./routes/report');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -20,13 +18,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static('uploads')); // Middleware untuk menyajikan file statis
 
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 app.use('/auth', authRouter);
-app.use('/customer', customerRouter);
+app.use('/production', productionRouter);
+app.use('/report', reportRouter);
 
 sequelize.sequelize.sync().then(() => {
   console.log('Connection has been established successfully.');

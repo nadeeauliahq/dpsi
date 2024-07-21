@@ -1,54 +1,26 @@
-const { Sequelize } = require('sequelize');
+// models/index.js
+const { Sequelize, DataTypes } = require('sequelize');
 
-// Konfigurasi koneksi Sequelize
-const sequelize = new Sequelize('2100016061_nadia', 'root', '', {
+const sequelize = new Sequelize('astaga', 'root', 'palemb2703', {
     host: 'localhost',
-    dialect: 'mysql'
+    dialect: 'mysql',
 });
 
-
-const Customer = require('./customer')(sequelize);
-const Category = require('./category')(sequelize);
-const Shipper = require('./shipper')(sequelize);
-
-const Employee = require('./employee')(sequelize);
-const Supplier = require('./supplier')(sequelize);
-const Product = require('./product')(sequelize);
-const Order = require('./order')(sequelize);
-const OrderDetail = require('./orderDetail')(sequelize);
-
-const User = require('./user')(sequelize);
-
+const User = require('./user')(sequelize, DataTypes);
+const Production = require('./production')(sequelize, DataTypes);
+const Report = require('./report')(sequelize, DataTypes);
 
 // Define associations
-Product.belongsTo(Supplier, { foreignKey: 'supplierID' });
-Product.belongsTo(Category, { foreignKey: 'categoryID' });
-Order.belongsTo(Customer, { foreignKey: 'customerID' });
-Order.belongsTo(Employee, { foreignKey: 'employeeID' });
-Order.belongsTo(Shipper, { foreignKey: 'shipperID' });
-OrderDetail.belongsTo(Order, { foreignKey: 'orderID' });
-OrderDetail.belongsTo(Product, { foreignKey: 'productID' });
+User.associate && User.associate({ Report, Production });
+Production.associate && Production.associate({ Report });
+Report.associate && Report.associate({ Production, User });
 
-
-
-// Sinkronkan model dengan database
-sequelize.sync()
+sequelize.sync({ alter: true })
   .then(() => {
     console.log('Database synchronized');
   })
   .catch(err => {
     console.error('Error synchronizing database:', err);
   });
-  
-module.exports = {
-    sequelize,
-    Customer,
-    Employee,
-    Product,
-    Supplier,
-    Category,
-    Order,
-    OrderDetail,
-    Shipper,
-    User,
-};
+
+module.exports = { sequelize, User, Production, Report };

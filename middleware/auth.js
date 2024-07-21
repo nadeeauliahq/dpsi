@@ -8,6 +8,7 @@ const authenticate = (req, res, next) => {
     }
     try {
         const decoded = jwt.verify(token, 'your_jwt_secret');
+        console.log('Decoded Token:', decoded); 
         req.user = decoded;
         next();
     } catch (err) {
@@ -17,6 +18,7 @@ const authenticate = (req, res, next) => {
 
 const authorize = (roles = []) => {
     return (req, res, next) => {
+        console.log('User Role:', req.user.role); // Tambahkan ini untuk melihat peran pengguna
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ message: 'Forbidden' });
         }

@@ -1,18 +1,20 @@
 // routes/auth.js
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models/index'); // Ensure correct import
+const { User } = require('../models/index'); 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
-
-// Route registration
+// routes register
 router.post('/register', async (req, res, next) => {
     try {
         const { username, password, role } = req.body;
+        if (!['admin', 'pegawai', 'manager'].includes(role)) {
+            return res.status(400).json({ message: 'Role tidak valid' });
+        }
         console.log('Creating user:', username, role);
         const newUser = await User.create({ username, password, role });
+        console.log('New user created:', newUser);
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
         console.error('Error creating user:', err);
@@ -39,5 +41,4 @@ router.post('/login', async (req, res, next) => {
         next(err);
     }
 });
-
 module.exports = router;

@@ -14,12 +14,10 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         role: {
-            type: DataTypes.ENUM('admin', 'user'),
+            type: DataTypes.ENUM('admin', 'pegawai', 'manager'),
             allowNull: false
         },
-        profilePic: {
-            type: DataTypes.STRING
-        }
+        
     }, {
         hooks: {
             beforeCreate: async (user) => {
